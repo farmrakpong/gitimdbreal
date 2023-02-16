@@ -8,6 +8,8 @@ import (
 )
 
 func main() {
+	db := Connect()
+	defer db.Close()
 	e := echo.New()
 	routes.UserRoute(e)
 	port := "191"
