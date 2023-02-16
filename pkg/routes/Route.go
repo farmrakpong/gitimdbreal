@@ -1,7 +1,7 @@
 package routes
 
 import (
-	"github.com/farmrakpong/goimdbreal/controller/movies"
+	"github.com/farmrakpong/goimdbreal/pkg/controller/movies"
 	"github.com/labstack/echo/v4"
 )
 

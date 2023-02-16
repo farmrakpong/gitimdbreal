@@ -3,7 +3,7 @@ package main
 import (
 	"log"
 
-	"github.com/farmrakpong/goimdbreal/routes"
+	"github.com/farmrakpong/goimdbreal/pkg/routes"
 	"github.com/labstack/echo/v4"
 )
 
