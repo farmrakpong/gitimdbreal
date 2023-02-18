@@ -1,4 +1,4 @@
-package main
+package db
 
 import (
 	_ "database/sql"
@@ -12,20 +12,9 @@ import (
 	"gorm.io/gorm"
 )
 
-type Register struct {
-	ID           string `json:"id"`
-	Name         string `json:"name"`
-	TotalProduct string `json:"totalProduct"`
-}
-type User struct {
-	gorm.Model
-	ID           string
-	Name         string
-	TotalProduct string
-}
 
 func Connect() *gorm.DB {
-	err := godotenv.Load(".env")
+	err := godotenv.Load("../.env")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -40,7 +29,7 @@ func Connect() *gorm.DB {
 	if err != nil {
 		panic("failed to connect database")
 	}
-	db.AutoMigrate(&User{})
+	// db.AutoMigrate(&User{})
 	fmt.Println("Connected")
 
 	return db

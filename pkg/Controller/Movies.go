@@ -1,6 +1,8 @@
 package Movies
 
 import (
+	"fmt"
+	"io/ioutil"
 	"strconv"
 
 	"github.com/labstack/echo/v4"
@@ -50,7 +52,14 @@ func GetAllMoviesByIDHandlerByID(c echo.Context) error {
 }
 func CreateMovies(c echo.Context) error {
 	m := &Movie{}
+	req := c.Request()
+	body, err := ioutil.ReadAll(req.Body)
+	if err != nil {
+		return err
+	}
+	defer req.Body.Close()
 
+	fmt.Println(string(body))
 	if err := c.Bind(m); err != nil {
 		return c.JSON(400, err.Error())
 	}
