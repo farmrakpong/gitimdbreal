@@ -1,16 +1,30 @@
 package main
 
 import (
-	"database/sql"
+	_ "database/sql"
 	"fmt"
 	"log"
 	"os"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/joho/godotenv"
+	"gorm.io/driver/mysql"
+	"gorm.io/gorm"
 )
 
-func Connect() *sql.DB {
+type Register struct {
+	ID           string `json:"id"`
+	Name         string `json:"name"`
+	TotalProduct string `json:"totalProduct"`
+}
+type User struct {
+	gorm.Model
+	ID           string
+	Name         string
+	TotalProduct string
+}
+
+func Connect() *gorm.DB {
 	err := godotenv.Load(".env")
 	if err != nil {
 		log.Fatal(err)
@@ -20,12 +34,14 @@ func Connect() *sql.DB {
 	host := os.Getenv("MYSQL_HOST")
 	port := os.Getenv("MYSQL_PORT")
 	database := os.Getenv("MYSQL_DATABASE")
-	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", user, password, host, port, database)
-	// fmt.Println(dsn)
-	db, err := sql.Open("mysql", dsn)
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", user, password, host, port, database+"?charset=utf8mb4&parseTime=True&loc=Local")
+	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+
 	if err != nil {
-		log.Fatal(err)
+		panic("failed to connect database")
 	}
+	db.AutoMigrate(&User{})
 	fmt.Println("Connected")
+
 	return db
 }
