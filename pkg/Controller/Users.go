@@ -1,17 +1,23 @@
-package Movies
+package user
 
 import (
 	"fmt"
-	"io/ioutil"
 	"strconv"
 
+	db "github.com/farmrakpong/goimdbreal/db"
+	userRepository "github.com/farmrakpong/goimdbreal/pkg/repository"
 	"github.com/labstack/echo/v4"
+	_ "gorm.io/gorm"
 )
 
 type Movie struct {
 	ImdbID string `json:"imdbID"`
 	Title  string `json:"title"`
 	Year   int    `json:"year"`
+}
+type Status struct {
+	Status int 
+	StatusText string 
 }
 
 var movies = []Movie{
@@ -42,27 +48,24 @@ func GetAllMoviesHandler(c echo.Context) error {
 }
 func GetAllMoviesByIDHandlerByID(c echo.Context) error {
 	id := c.Param("id")
-	// fmt.Println(id)
 	for _, m := range movies {
 		if m.ImdbID == id {
 			return c.JSON(200, m)
 		}
 	}
 	return c.JSON(200, map[string]string{"message": "movie" + id})
+	
 }
-func CreateMovies(c echo.Context) error {
-	m := &Movie{}
-	req := c.Request()
-	body, err := ioutil.ReadAll(req.Body)
-	if err != nil {
+func CreateUser(c echo.Context) error {
+	conn := db.Connect()
+	user := new(userRepository.User)
+	if err := c.Bind(user); err != nil {
 		return err
 	}
-	defer req.Body.Close()
-
-	fmt.Println(string(body))
-	if err := c.Bind(m); err != nil {
-		return c.JSON(400, err.Error())
+	val := conn.Create(user)
+	if val.Error != nil {
+		fmt.Println("<----err CreateUser----->")
+		return c.JSON(400, Status{Status: 400 , StatusText:"bad Create"})
 	}
-	movies = append(movies, *m)
-	return c.JSON(200, m)
+	return c.JSON(200, Status{Status: 200,StatusText:"success !!!"})
 }
